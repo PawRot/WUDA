@@ -3,10 +3,10 @@ name: CI/CD pipeline
 on:
   push:
     branches:
-      [ main, develop]
+      [master, develop]
   pull_request:
     branches:
-      - main
+      [master, develop]
 
 jobs:
   vulnerability-scan:
