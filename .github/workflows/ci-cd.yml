@@ -54,4 +54,69 @@ jobs:
         with:
           sarif_file: bandit-frontend.sarif
           category: 'bandit frontend'
+  lint:
+    name: code linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
 
+      - name: python setup
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: install flake8
+        run: pip install flake8
+
+      - name: lint back-end
+        run: |
+          flake8 back-end/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 back-end/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: lint front-end
+        run: |
+          flake8 front-end/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 front-end/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+
+
+  test-backend:
+    name: back-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: python setup
+        uses: actions/setup-python@v6
+        with:
+            python-version: '3.x'
+
+      - name: install dependencies
+        working-directory: ./back-end
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+
+      - name: run tests
+        working-directory: ./back-end
+        run: pytest test_app.py -v
+  test-frontend:
+    name: front-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: python setup
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - name: install dependencies
+        working-directory: ./front-end
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+
+      - name: run tests
+        working-directory: ./front-end
+        run: pytest test_app.py -v
