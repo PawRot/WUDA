@@ -1,0 +1,66 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      [master, develop]
+  pull_request:
+    branches:
+      [master, develop]
+
+jobs:
+  test-backend:
+    name: back-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: python setup
+        uses: actions/setup-python@v6
+        with:
+            python-version: '3.13'
+
+      - name: install dependencies
+        working-directory: ./back-end
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+
+      - name: run tests
+        env:
+          POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+          POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+          POSTGRES_HOST: ${{secrets.POSTGRES_HOST}}
+          PORT: ${{secrets.PORT}}
+          JWT_KEY: ${{secrets.JWT_KEY}}
+          APP_PORT: ${{secrets.APP_PORT}}
+        working-directory: ./back-end
+        run: pytest test_app.py -v
+
+  test-frontend:
+    name: front-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: python setup
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: install dependencies
+        working-directory: ./front-end
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements_test.txt
+
+      - name: run tests
+        env:
+          BACKEND_HOSTNAME: ${{secrets.BACKEND_HOSTNAME}}
+          BACKEND_PORT: ${{secrets.BACKEND_PORT}}
+          SECRET_KEY: ${{secrets.SECRET_KEY}}
+          SERVER_PORT: ${{secrets.SERVER_PORT}}
+        working-directory: ./front-end
+        run: pytest test_app.py -v
+
