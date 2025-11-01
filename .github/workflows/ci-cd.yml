@@ -34,7 +34,7 @@ jobs:
 
       # use bandit to scan source code, output in sarif format
       - name: bandit install
-        run: pip install bandit
+        run: pip install bandit[sarif]
 
       - name: back-end bandit
         run: bandit -r `front-end/` -f sarif -o `bandit-backend.sarif` --exit-zero # exit-zero doesn't fail build, only reports
