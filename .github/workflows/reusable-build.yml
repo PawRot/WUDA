@@ -1,0 +1,65 @@
+name: Reusable Build and Push Workflow
+
+on:
+  workflow_call:
+    inputs:
+      service:
+        description: 'Service to build (back-end or front-end)'
+        required: true
+        type: string
+
+jobs:
+  build-push:
+    name: build and push ${{ inputs.service }} image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository }}/${{ inputs.service }}
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=raw,value= ${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: build and push ${{ inputs.service }} image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./${{ inputs.service }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: lowercase repository name
+        id: repo
+        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: run trivy ${{ inputs.service }} scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ steps.repo.outputs.name }}/${{ inputs.service }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-${{ inputs.service }}-image.sarif'
+
+      - name: upload trivy ${{ inputs.service }} scan
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: trivy-${{ inputs.service }}-image.sarif
+          category: 'trivy ${{ inputs.service }}'
+
