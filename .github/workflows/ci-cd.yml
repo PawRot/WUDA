@@ -171,11 +171,15 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: lowercase repository name
+        id: repo
+        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       # scanning built image with trivy
       - name: run trivy back-end scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/${{ github.repository }}/back-end:${{ github.sha }}
+          image-ref: ghcr.io/${{ steps.repo.outputs.name }}/back-end:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-backend-image.sarif'
 
@@ -222,11 +226,15 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: lowercase repository name
+        id: repo
+        run: echo "name=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       # scanning built image with trivy
       - name: run trivy front-end scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/${{ github.repository }}/front-end:${{ github.sha }}
+          image-ref: ghcr.io/${{ steps.repo.outputs.name }}/front-end:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-frontend-image.sarif'
 
