@@ -179,7 +179,7 @@ jobs:
           output: 'trivy-backend-image.sarif'
 
       - name: upload trivy back-end scan
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-backend-image.sarif
@@ -229,7 +229,7 @@ jobs:
           output: 'trivy-frontend-image.sarif'
 
       - name: upload trivy front-end scan
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-frontend-image.sarif
