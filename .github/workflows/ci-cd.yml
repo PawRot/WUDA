@@ -132,7 +132,7 @@ jobs:
           BACKEND_PORT: ${{secrets.BACKEND_PORT}}
           SECRET_KEY: ${{secrets.SECRET_KEY}}
           SERVER_PORT: ${{secrets.SERVER_PORT}}
-          working-directory: ./front-end
+        working-directory: ./front-end
         run: pytest test_app.py -v
   build-push-backend:
     name: build and push back-end image
