@@ -156,7 +156,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/${{ github.repository }}/back-end:${{ github.sha }}
+          images: ghcr.io/${{ github.repository }}/back-end
           tags: |
             type=sha
             type=ref,event=branch
