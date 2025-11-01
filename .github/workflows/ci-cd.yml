@@ -37,7 +37,7 @@ jobs:
         run: pip install bandit[sarif]
 
       - name: back-end bandit
-        run: bandit -r `front-end/` -f sarif -o `bandit-backend.sarif` --exit-zero # exit-zero doesn't fail build, only reports
+        run: bandit -r front-end/ -f sarif -o bandit-backend.sarif --exit-zero # exit-zero doesn't fail build, only reports
 
       - name: upload backend bandit report
         uses: github/codeql-action/upload-sarif@v4
@@ -47,7 +47,7 @@ jobs:
           category: 'bandit backend'
 
       - name: front-end bandit
-        run: bandit -r `front-end/` -f sarif -o `bandit-frontend.sarif` --exit-zero
+        run: bandit -r back-end/ -f sarif -o bandit-backend.sarif --exit-zero
 
       - name: upload frontend bandit report
         uses: github/codeql-action/upload-sarif@v4
