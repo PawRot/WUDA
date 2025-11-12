@@ -1,0 +1,68 @@
+name: CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      [master, develop]
+  pull_request:
+    branches:
+      [master, develop]
+
+jobs:
+  # Testing jobs
+  test-backend:
+    name: Test Backend
+    uses: ./.github/workflows/reusable-test.yml
+    with:
+      service: back-end
+    secrets: inherit
+
+  test-frontend:
+    name: Test Frontend
+    uses: ./.github/workflows/reusable-test.yml
+    with:
+      service: front-end
+    secrets: inherit
+
+  # Linting jobs
+  lint-backend:
+    name: Lint Backend
+    uses: ./.github/workflows/reusable-lint.yml
+    with:
+      service: back-end
+
+  lint-frontend:
+    name: Lint Frontend
+    uses: ./.github/workflows/reusable-lint.yml
+    with:
+      service: front-end
+
+  # Security scanning jobs
+  scan-backend:
+    name: Security Scan Backend
+    uses: ./.github/workflows/reusable-security.yml
+    with:
+      service: back-end
+
+  scan-frontend:
+    name: Security Scan Frontend
+    uses: ./.github/workflows/reusable-security.yml
+    with:
+      service: front-end
+
+  # Build jobs - only run after all checks pass
+  build-backend:
+    name: Build Backend
+    needs: [test-backend, lint-backend, scan-backend]
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      service: back-end
+
+  build-frontend:
+    name: Build Frontend
+    needs: [test-frontend, lint-frontend, scan-frontend]
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      service: front-end
+

@@ -1,0 +1,41 @@
+name: Reusable Security Scan Workflow
+
+on:
+  workflow_call:
+    inputs:
+      service:
+        description: 'Service to scan (back-end or front-end)'
+        required: true
+        type: string
+
+jobs:
+  scan:
+    name: security scan ${{ inputs.service }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: python setup
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: pip-audit install
+        run: pip install pip-audit
+
+      - name: ${{ inputs.service }} audit
+        run: pip-audit -r ${{ inputs.service }}/requirements.txt --desc
+
+      - name: bandit install
+        run: pip install bandit[sarif]
+
+      - name: ${{ inputs.service }} bandit scan
+        run: bandit -r ${{ inputs.service }}/ -f sarif -o bandit-${{ inputs.service }}.sarif --exit-zero
+
+      - name: upload ${{ inputs.service }} bandit report
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: bandit-${{ inputs.service }}.sarif
+          category: 'bandit ${{ inputs.service }}'
+
