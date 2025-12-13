@@ -16,6 +16,3 @@ backend:
 
 db:
   enabled: true
-
-ingress:
-  enabled: false
