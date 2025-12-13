@@ -28,17 +28,17 @@ spec:
                 name: {{ include "wuda.componentName" (list . "frontend") }}
             - secretRef:
                 name: {{ include "wuda.componentName" (list . "frontend") }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 10
-            periodSeconds: 15
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 10
+{{/*          livenessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /*/}}
+{{/*              port: http*/}}
+{{/*            initialDelaySeconds: 10*/}}
+{{/*            periodSeconds: 15*/}}
+{{/*          readinessProbe:*/}}
+{{/*            httpGet:*/}}
+{{/*              path: /*/}}
+{{/*              port: http*/}}
+{{/*            initialDelaySeconds: 5*/}}
+{{/*            periodSeconds: 10*/}}
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}

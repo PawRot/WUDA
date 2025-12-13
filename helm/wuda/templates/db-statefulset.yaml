@@ -37,10 +37,13 @@ spec:
                   key: POSTGRES_PASSWORD
           volumeMounts:
             - name: data
-              mountPath: /var/lib/postgresql/data
+              mountPath: /var/lib/postgresql
           readinessProbe:
             exec:
-              command: ["sh", "-c", "pg_isready -U $POSTGRES_USER"]
+              command:
+                - sh
+                - -c
+                - pg_isready -U {{ .Values.db.auth.username }} -d {{ .Values.db.auth.database }}
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:

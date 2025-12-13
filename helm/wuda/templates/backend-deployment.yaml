@@ -16,6 +16,24 @@ spec:
         {{- include "wuda.labels" . | nindent 8 }}
         app.kubernetes.io/component: backend
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: postgres:16-alpine
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h {{ include "wuda.componentName" (list . "db") }} -p 5432 -U {{ .Values.backend.env.POSTGRES_USER }} -d {{.Values.backend.env.POSTGRES_DB}}; do
+                echo "Waiting for database to be ready..."
+                sleep 2
+              done
+              echo "Database is ready!"
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "wuda.componentName" (list . "backend") }}
+                  key: POSTGRES_PASSWORD
       containers:
         - name: backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
@@ -36,7 +54,8 @@ spec:
             periodSeconds: 15
           readinessProbe:
             httpGet:
-              path: /readiness
+              path: /liveness
+{{/*              readiness always returns 500???*/}}
               port: http
             initialDelaySeconds: 5
             periodSeconds: 10

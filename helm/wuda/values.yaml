@@ -66,7 +66,7 @@ db:
   enabled: true
   image:
     repository: postgres
-    tag: "16"
+    tag: "latest"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
