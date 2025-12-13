@@ -1,0 +1,21 @@
+frontend:
+  image:
+    repository: wuda-frontend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+
+backend:
+  image:
+    repository: wuda-backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+
+db:
+  enabled: true
+
+ingress:
+  enabled: false
