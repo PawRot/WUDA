@@ -1,0 +1,6 @@
+apiVersion: v2
+name: wuda
+description: Helm chart for the WUDA project (frontend, backend, and optional Postgres DB)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

@@ -1,0 +1,17 @@
+{{- if .Values.db.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "wuda.componentName" (list . "db") }}
+  labels:
+    {{- include "wuda.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.db.service.type }}
+  selector:
+    app.kubernetes.io/component: db
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: postgres
+      port: {{ .Values.db.service.port }}
+      targetPort: 5432
+{{- end }}
